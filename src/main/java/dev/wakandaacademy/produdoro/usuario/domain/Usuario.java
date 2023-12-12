@@ -31,14 +31,19 @@ public class Usuario {
 	private String email;
 	private ConfiguracaoUsuario configuracao;
 	@Builder.Default
-	private StatusUsuario status = StatusUsuario.FOCO;
+	private StatusUsuario status = StatusUsuario.PAUSA_CURTA;
 	@Builder.Default
 	private Integer quantidadePomodorosPausaCurta = 0;
 	
 	public Usuario(UsuarioNovoRequest usuarioNovo, ConfiguracaoPadrao configuracaoPadrao) {
 		this.idUsuario = UUID.randomUUID();
 		this.email = usuarioNovo.getEmail();
-		this.status = StatusUsuario.FOCO;
+		this.status = StatusUsuario.PAUSA_CURTA;
 		this.configuracao = new ConfiguracaoUsuario(configuracaoPadrao);
+	}
+
+
+	public void mudaStatusParaPausaCurta(UUID idUsuario) {
+		this.status = StatusUsuario.FOCO;
 	}
 }
