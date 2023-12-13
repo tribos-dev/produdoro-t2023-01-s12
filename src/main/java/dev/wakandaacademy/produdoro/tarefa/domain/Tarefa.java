@@ -57,6 +57,10 @@ public class Tarefa {
 		}
 	}
 	public void altera(EditaTarefaRequest editaTarefaRequest) {
-		this.descricao = editaTarefaRequest.getDescricao();
+		if (editaTarefaRequest.getDescricao().isBlank()) {
+			throw APIException.build(HttpStatus.BAD_REQUEST, "O campo não pode estar vazio!");
+		} else {
+			this.descricao = editaTarefaRequest.getDescricao();
+		}
 	}
 }

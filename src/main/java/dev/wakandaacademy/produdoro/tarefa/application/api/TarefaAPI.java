@@ -21,5 +21,5 @@ public interface TarefaAPI {
     @PatchMapping("/editaTarefa/{idTarefa}")
     @ResponseStatus(code = HttpStatus.NO_CONTENT)
     void editaTarefa(@RequestHeader(name = "Authorization",required = true) String token,
-    		@PathVariable UUID idTarefa, @RequestBody EditaTarefaRequest editaTarefaRequest);
+    		@PathVariable UUID idTarefa, @Valid @RequestBody EditaTarefaRequest editaTarefaRequest);
 }
