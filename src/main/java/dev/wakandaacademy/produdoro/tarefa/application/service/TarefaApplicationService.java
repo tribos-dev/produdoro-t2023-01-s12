@@ -46,9 +46,9 @@ public class TarefaApplicationService implements TarefaService {
 	@Override
 	public void mudaStatusParaConcluida(String token, UUID idTarefa) {
 		log.info("[inicia] PessoaApplicationService - mudaStatusParaConcluidaa");
-		Tarefa tarefa = tarefaRepository.buscaTarefaPorId(idTarefa)
-				.orElseThrow(() -> APIException.build(HttpStatus.NOT_FOUND, "Tarefa não encontrada!"));
-		mudaStatusParaConcluida(String token);
+		Tarefa tarefa = detalhaTarefa(token, idTarefa);
+		tarefa.mudaStatusParaConcluida();
+		tarefaRepository.salva(tarefa);
 		log.info("[finaliza] PessoaApplicationService - mudaStatusParaConcluida");
 		}
 }

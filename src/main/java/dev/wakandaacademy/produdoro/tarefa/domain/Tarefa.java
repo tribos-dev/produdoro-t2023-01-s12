@@ -55,11 +55,8 @@ public class Tarefa {
 		}
 	}
 
-	public void mudaStatusParaConcluida(String idTarefa) {
-		if ("ATIVA".equals(status)) {
-			this.status = StatusTarefa.CONCLUIDA;
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "A tarefa não está ativa.");
-		}
-
+	public void mudaStatusParaConcluida() {
+		status = StatusTarefa.CONCLUIDA;
 	}
+
 }

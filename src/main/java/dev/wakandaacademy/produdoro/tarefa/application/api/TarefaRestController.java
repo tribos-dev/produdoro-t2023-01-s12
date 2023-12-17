@@ -46,10 +46,10 @@ public class TarefaRestController implements TarefaAPI {
 	@Override
 	public void mudaStatusParaConcluida(String token, UUID idTarefa) {
 		log.info("[inicia] TarefaRestController - mudaStatusParaConcluida");
-		String usuario = getUsuarioByToken(token);
+		log.info("[idTarefa {}", idTarefa);
 		tarefaService.mudaStatusParaConcluida(token, idTarefa);
-		log.info("[inicia] TarefaRestController - mudaStatusParaConcluida");
-
+		log.info("[finaliza] TarefaRestController - mudaStatusParaConcluida");
 	}
+
 
 }
