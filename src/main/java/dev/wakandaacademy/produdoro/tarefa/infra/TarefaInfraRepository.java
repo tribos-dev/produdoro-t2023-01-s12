@@ -42,6 +42,5 @@ public class TarefaInfraRepository implements TarefaRepository {
 		log.info("[inicia] TarefaInfraRepository - deletaTarefa");
 		tarefaSpringMongoDBRepository.delete(tarefa);
 		log.info("[finaliza] TarefaInfraRepository - deletaTarefa");
-		
 	}
 }
