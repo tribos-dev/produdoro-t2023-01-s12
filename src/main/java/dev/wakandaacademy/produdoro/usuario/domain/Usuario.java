@@ -45,14 +45,21 @@ public class Usuario {
 	}
 
 
-	public void mudaStatusParaPausaCurta(UUID idUsuario) {
+	public void mudaStatusParaFoco(UUID idUsuario) {
 		checaAutenticacaoUsuario(idUsuario);
-		this.status = StatusUsuario.FOCO;
+		alteraStatusFoco();
 	}
 
-	public void checaAutenticacaoUsuario(UUID idUsuario) {
+	private void checaAutenticacaoUsuario(UUID idUsuario) {
 		if (!this.idUsuario.equals(idUsuario)) {
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não e válida");
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida");
 		}
+	}
+
+	private StatusUsuario alteraStatusFoco() {
+		if (this.status == StatusUsuario.FOCO) {
+			throw APIException.build(HttpStatus.BAD_REQUEST, "Usuário já está em FOCO");
+		}
+		return this.status = StatusUsuario.FOCO;
 	}
 }

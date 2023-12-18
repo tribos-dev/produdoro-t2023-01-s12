@@ -44,4 +44,15 @@ class UsuarioApplicationServiceTest {
         assertEquals("Credencial de autenticação não é válida", exception.getMessage());
         assertEquals(HttpStatus.UNAUTHORIZED, exception.getStatusException());
     }
+
+    @Test
+    void statusJaEstaEmFoco() {
+        Usuario usuario = DataHelper.createUsuario();
+        when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+        usuarioApplicationService.alteraStatusParaFoco(usuario.getEmail(), usuario.getIdUsuario());
+        APIException exception = assertThrows(APIException.class,
+                () -> usuarioApplicationService.alteraStatusParaFoco(usuario.getEmail(), usuario.getIdUsuario()));
+        assertEquals("Usuário já está em FOCO", exception.getMessage());
+        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusException());
+    }
 }
