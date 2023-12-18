@@ -48,7 +48,10 @@ public class UsuarioController implements UsuarioAPI {
 	}
 
 	private String buscaEmailUsuarioPeloToken(String token){
-		return tokenService.getUsuarioByBearerToken(token)
+		log.debug("[token] {}", token);
+		String email =  tokenService.getUsuarioByBearerToken(token)
 				.orElseThrow(() -> APIException.build(HttpStatus.UNAUTHORIZED, "Usuário inválido"));
+		log.info("[email] {}", email);
+		return email;
 	}
 }
