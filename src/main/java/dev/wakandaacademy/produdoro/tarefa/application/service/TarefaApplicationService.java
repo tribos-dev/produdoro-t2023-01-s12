@@ -1,5 +1,10 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
@@ -9,10 +14,6 @@ import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioReposi
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @Log4j2
@@ -41,10 +42,15 @@ public class TarefaApplicationService implements TarefaService {
         return tarefa;
     }
 	@Override
-	public void ativaTarefa(String usuarioToken, UUID idUsuario, UUID idTarefa) {
+	public void ativaTarefa(String usuario, UUID idUsuario, UUID idTarefa) {
         log.info("[inicia] TarefaApplicationService - ativaTarefa");
-        Tarefa tarefa = detalhaTarefa(usuarioToken, idTarefa);
+        Usuario usuarioPorEmail = usuarioRepository.buscaUsuarioPorEmail(usuario);
+        Tarefa tarefa = tarefaRepository.buscaTarefaPorId(idTarefa)
+                .orElseThrow(() -> APIException.build(HttpStatus.BAD_REQUEST, "ID da Tarefa inválido"));
+        tarefa.pertenceAoUsuario(usuarioPorEmail);
+        tarefa.validaUsuario(idUsuario);
         tarefa.ativaTarefa();
+        tarefaRepository.desativaTarefa(idUsuario);
         tarefaRepository.salva(tarefa);
         log.info("[finaliza] TarefaApplicationService - ativaTarefa");
 		
