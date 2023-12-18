@@ -57,13 +57,11 @@ public class Tarefa {
 	}
 
 	public void ativaTarefa() {
-		if (this.statusAtivacao == StatusAtivacaoTarefa.ATIVA) {
-	        throw APIException.build(HttpStatus.UNAUTHORIZED, "Essa tarefa ja esta ativa!");
-		}
+		this.statusAtivacao = StatusAtivacaoTarefa.ATIVA;
 	}
 
 	public void validaUsuario(UUID idUsuario2) {
-			if(!idUsuario.equals(this.getIdUsuario())) {
+		if(!idUsuario.equals(this.getIdUsuario())) {
 			  throw APIException
 			   .build(HttpStatus.UNAUTHORIZED, "Usuário não validado!");
 			}
