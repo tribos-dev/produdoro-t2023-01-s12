@@ -46,9 +46,13 @@ public class Usuario {
 
 
 	public void mudaStatusParaPausaCurta(UUID idUsuario) {
+		checaAutenticacaoUsuario(idUsuario);
+		this.status = StatusUsuario.FOCO;
+	}
+
+	public void checaAutenticacaoUsuario(UUID idUsuario) {
 		if (!this.idUsuario.equals(idUsuario)) {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não e válida");
 		}
-		this.status = StatusUsuario.FOCO;
 	}
 }
