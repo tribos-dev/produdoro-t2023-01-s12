@@ -44,11 +44,11 @@ public class TarefaApplicationService implements TarefaService {
 	}
 
 	@Override
-	public void mudaStatusParaConcluida(String token, UUID idTarefa) {
-		log.info("[inicia] PessoaApplicationService - mudaStatusParaConcluidaa");
-		Tarefa tarefa = detalhaTarefa(token, idTarefa);
+	public void mudaStatusParaConcluida(String usuario, UUID idTarefa) {
+		log.info("[inicia] PessoaApplicationService - mudaStatusParaConcluida");
+		Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
 		tarefa.mudaStatusParaConcluida();
 		tarefaRepository.salva(tarefa);
 		log.info("[finaliza] PessoaApplicationService - mudaStatusParaConcluida");
-		}
+	}
 }

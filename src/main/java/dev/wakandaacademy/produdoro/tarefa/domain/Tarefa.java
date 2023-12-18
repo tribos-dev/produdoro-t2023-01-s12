@@ -56,7 +56,7 @@ public class Tarefa {
 	}
 
 	public void mudaStatusParaConcluida() {
-		status = StatusTarefa.CONCLUIDA;
+		this.status = StatusTarefa.CONCLUIDA;
 	}
 
 }
