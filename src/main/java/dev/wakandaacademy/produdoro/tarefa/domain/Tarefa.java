@@ -60,7 +60,7 @@ public class Tarefa {
 		this.statusAtivacao = StatusAtivacaoTarefa.ATIVA;
 	}
 
-	public void validaUsuario(UUID idUsuario2) {
+	public void validaUsuario(UUID idUsuario) {
 		if(!idUsuario.equals(this.getIdUsuario())) {
 			  throw APIException
 			   .build(HttpStatus.UNAUTHORIZED, "Usuário não validado!");

@@ -46,7 +46,7 @@ public class TarefaRestController implements TarefaAPI {
 	public void tarefaAtiva(String token, UUID idUsuario, UUID idTarefa) {
 		log.info("[inicia] TarefaRestController - tarefaAtiva");
 		String usuarioToken = getUsuarioByToken(token);
-		tarefaService.ativaTarefa(usuarioToken, idTarefa, idTarefa);
+		tarefaService.ativaTarefa(usuarioToken, idUsuario, idTarefa);
 		log.info("[finaliza] TarefaRestController - tarefaAtiva");
 		
 	}
