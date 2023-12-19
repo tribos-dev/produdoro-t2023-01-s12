@@ -33,17 +33,16 @@ public class Usuario {
 	private String email;
 	private ConfiguracaoUsuario configuracao;
 	@Builder.Default
-	private StatusUsuario status = StatusUsuario.PAUSA_CURTA;
+	private StatusUsuario status = StatusUsuario.FOCO;
 	@Builder.Default
 	private Integer quantidadePomodorosPausaCurta = 0;
-	
+
 	public Usuario(UsuarioNovoRequest usuarioNovo, ConfiguracaoPadrao configuracaoPadrao) {
 		this.idUsuario = UUID.randomUUID();
 		this.email = usuarioNovo.getEmail();
-		this.status = StatusUsuario.PAUSA_CURTA;
+		this.status = StatusUsuario.FOCO;
 		this.configuracao = new ConfiguracaoUsuario(configuracaoPadrao);
 	}
-
 
 	public void mudaStatusParaFoco(UUID idUsuario) {
 		checaAutenticacaoUsuario(idUsuario);
@@ -57,8 +56,8 @@ public class Usuario {
 	}
 
 	private StatusUsuario alteraStatusFoco() {
-		if (this.status == StatusUsuario.FOCO) {
-			throw APIException.build(HttpStatus.BAD_REQUEST, "Usuário já está em FOCO");
+		if (this.status.equals(StatusUsuario.FOCO)) {
+			throw APIException.build(HttpStatus.CONFLICT, "Usuário já está em FOCO");
 		}
 		return this.status = StatusUsuario.FOCO;
 	}

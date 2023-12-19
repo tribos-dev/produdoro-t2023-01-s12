@@ -53,6 +53,6 @@ class UsuarioApplicationServiceTest {
         APIException exception = assertThrows(APIException.class,
                 () -> usuarioApplicationService.alteraStatusParaFoco(usuario.getEmail(), usuario.getIdUsuario()));
         assertEquals("Usuário já está em FOCO", exception.getMessage());
-        assertEquals(HttpStatus.BAD_REQUEST, exception.getStatusException());
+        assertEquals(HttpStatus.CONFLICT, exception.getStatusException());
     }
 }
