@@ -18,11 +18,13 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.extern.log4j.Log4j2;
 
 @Builder
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Log4j2
 @ToString
 @Document(collection = "Usuario")
 public class Usuario {
@@ -42,6 +44,21 @@ public class Usuario {
 		this.email = usuarioNovo.getEmail();
 		this.status = StatusUsuario.FOCO;
 		this.configuracao = new ConfiguracaoUsuario(configuracaoPadrao);
+	}
+
+	public void mudaStatusPausaCurta() {
+		// validaUsuario(idUsuario);
+		this.status = StatusUsuario.PAUSA_CURTA;
+
+	}
+
+	public void validaUsuario(UUID idUsuario) {
+		log.info("[inicia] Usuario - validaUsuario");
+		if (!this.idUsuario.equals(idUsuario)) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida");
+
+		}
+		log.info("[finaliza] Usuario - validaUsuario");
 	}
 
 	public void validaIdUsuarioPausaLonga(UUID idUsuario) {
@@ -66,10 +83,4 @@ public class Usuario {
 		return this.status = StatusUsuario.FOCO;
 	}
 
-	public void validaUsuario(UUID idUsuario) {
-		if (!this.idUsuario.equals(idUsuario)) {
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida");
-		}
-
-	}
 }

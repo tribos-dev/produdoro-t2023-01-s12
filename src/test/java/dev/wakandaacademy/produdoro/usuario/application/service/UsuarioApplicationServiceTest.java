@@ -25,11 +25,33 @@ import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 
 @ExtendWith(MockitoExtension.class)
 class UsuarioApplicationServiceTest {
+	@Mock
+	private UsuarioRepository usuarioRepository;
 	@InjectMocks
 	private UsuarioApplicationService usuarioApplicationService;
 
-	@Mock
-	private UsuarioRepository usuarioRepository;
+	@Test
+	public void MudaStatusParaPausaCurtaTest() {
+
+		Usuario usuario = DataHelper.createUsuario();
+		when(usuarioRepository.salva(any())).thenReturn(usuario);
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		usuarioApplicationService.mudaStatusPausaCurta(usuario.getEmail(), usuario.getIdUsuario());
+		verify(usuarioRepository, times(1)).salva(any());
+		assertEquals(StatusUsuario.PAUSA_CURTA, usuario.getStatus());
+	}
+
+	@Test
+	public void naoDeveMudaStatusParaPausaCurtaTest() {
+		UUID idUsuario2 = UUID.randomUUID();
+		Usuario usuario = DataHelper.createUsuario();
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		APIException ex = assertThrows(APIException.class, () -> {
+			usuarioApplicationService.mudaStatusPausaCurta(usuario.getEmail(), idUsuario2);
+		});
+		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
+		assertEquals("Credencial de autenticação não é válida", ex.getMessage());
+	}
 
 	@Test
 	public void deveAlterarStatusParaPausaLongaComSucesso() {

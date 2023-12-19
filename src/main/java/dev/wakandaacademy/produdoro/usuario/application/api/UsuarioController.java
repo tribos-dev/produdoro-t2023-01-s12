@@ -29,6 +29,7 @@ public class UsuarioController implements UsuarioAPI {
 		log.info("[finaliza] UsuarioController - postNovoUsuario");
 		return usuarioCriado;
 	}
+
 	@Override
 	public UsuarioCriadoResponse buscaUsuarioPorId(UUID idUsuario) {
 		log.info("[inicia] UsuarioController - buscaUsuarioPorId");
@@ -39,6 +40,15 @@ public class UsuarioController implements UsuarioAPI {
 	}
 
 	@Override
+	public void mudaStatusParaPausaCurta(String token, UUID idUsuario) {
+		log.info("[inicia]UsuarioController - mudaStatusParaPausaCurta");
+		log.info("[idUsuario] {}", idUsuario);
+		String usuario = tokenService.getUsuarioByBearerToken(token)
+				.orElseThrow(() -> APIException.build(HttpStatus.FORBIDDEN, "Token Inválido!"));
+		usuarioAppplicationService.mudaStatusPausaCurta(usuario, idUsuario);
+		log.info("[Finaliza]UsuarioController - mudaStatusParaPausaCurta");
+	}
+
 	public void alteraStatusUsuarioPausaLonga(String token, UUID idUsuario) {
 		log.info("[inicia] UsuarioController - alteraStatusUsuarioPausaLonga");
 		String email = buscaEmailUsuarioPeloToken(token);
@@ -46,13 +56,14 @@ public class UsuarioController implements UsuarioAPI {
 		log.info("[finaliza] UsuarioController - alteraStatusUsuarioPausaLonga");
 	}
 
-	private String buscaEmailUsuarioPeloToken(String token){
+	private String buscaEmailUsuarioPeloToken(String token) {
 		log.debug("[token] {}", token);
-		String email =  tokenService.getUsuarioByBearerToken(token)
+		String email = tokenService.getUsuarioByBearerToken(token)
 				.orElseThrow(() -> APIException.build(HttpStatus.UNAUTHORIZED, "Usuário inválido"));
 		log.info("[email] {}", email);
 		return email;
 	}
+
 	@Override
 	public void patchAlteraStatusParaFoco(String token, UUID idUsuario) {
 		log.info("[inicia] UsuarioController - patchAlteraStatusDoUsuarioParaFoco");
