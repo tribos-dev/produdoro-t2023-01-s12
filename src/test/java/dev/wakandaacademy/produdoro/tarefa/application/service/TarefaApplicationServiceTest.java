@@ -83,7 +83,7 @@ class TarefaApplicationServiceTest {
 				() -> tarefaApplicationService.buscaTodasTarefas(email, UUID.randomUUID()));
 		assertNotNull(ex);
 		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
-		assertEquals("A credencial não é válida.", ex.getMessage());
+		assertEquals("Credencial de autenticação não é válida", ex.getMessage());
 	}
 
 	@Test
