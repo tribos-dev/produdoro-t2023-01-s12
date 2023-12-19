@@ -36,6 +36,14 @@ public class TarefaRestController implements TarefaAPI {
 		return new TarefaDetalhadoResponse(tarefa);
 	}
 
+	@Override
+	public void incrementaPomodoroTarefa(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController - incrementaPomodoroTarefa");
+		String email = getUsuarioByToken(token);
+		tarefaService.incrementaPomodoroTarefa(email, idTarefa);
+		log.info("[finaliza] TarefaRestController - incrementaPomodoroTarefa");
+	}
+
 	private String getUsuarioByToken(String token) {
 		log.debug("[token] {}", token);
 		String usuario = tokenService.getUsuarioByBearerToken(token)
@@ -53,6 +61,21 @@ public class TarefaRestController implements TarefaAPI {
 	}
 
 	@Override
+	public void mudaStatusParaConcluida(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController - mudaStatusParaConcluida");
+		log.info("[idTarefa {}", idTarefa);
+		String usuario = getUsuarioByToken(token);
+		tarefaService.mudaStatusParaConcluida(usuario, idTarefa);
+		log.info("[finaliza] TarefaRestController - mudaStatusParaConcluida");
+	}
+
+	public void deletaTarefa(String token, UUID idTarefa) {
+		log.info("[inicia] TarefaRestController - deletaTarefa");
+		String usuario = getUsuarioByToken(token);
+		tarefaService.deletaTarefa(usuario, idTarefa);
+		log.info("[finaliza] TarefaRestController - deletaTarefa");
+	}
+
 	public List<TarefaListResponse> getTarefasDoUsuario(String token, UUID idUsuario) {
 		log.info("[inicia] TarefaRestController - getTarefasDoUsuario");
 		String usuario = getUsuarioByToken(token);
@@ -60,5 +83,4 @@ public class TarefaRestController implements TarefaAPI {
 		log.info("[finaliza] TarefaRestController - getTarefasDoUsuario");
 		return tarefas;
 	}
-
 }

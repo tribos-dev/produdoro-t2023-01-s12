@@ -36,7 +36,7 @@ public class Usuario {
 	private StatusUsuario status = StatusUsuario.FOCO;
 	@Builder.Default
 	private Integer quantidadePomodorosPausaCurta = 0;
-	
+
 	public Usuario(UsuarioNovoRequest usuarioNovo, ConfiguracaoPadrao configuracaoPadrao) {
 		this.idUsuario = UUID.randomUUID();
 		this.email = usuarioNovo.getEmail();
@@ -44,10 +44,32 @@ public class Usuario {
 		this.configuracao = new ConfiguracaoUsuario(configuracaoPadrao);
 	}
 
+	public void validaIdUsuarioPausaLonga(UUID idUsuario) {
+		if (!this.idUsuario.equals(idUsuario)) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "credencial de autenticação não é valida");
+		}
+	}
+
+	public void alterStatusParaPausaLonga() {
+		this.status = StatusUsuario.PAUSA_LONGA;
+	}
+
+	public void mudaStatusParaFoco(UUID idUsuario) {
+		validaUsuario(idUsuario);
+		alteraStatusFoco();
+	}
+
+	private StatusUsuario alteraStatusFoco() {
+		if (this.status.equals(StatusUsuario.FOCO)) {
+			throw APIException.build(HttpStatus.CONFLICT, "Usuário já está em FOCO");
+		}
+		return this.status = StatusUsuario.FOCO;
+	}
+
 	public void validaUsuario(UUID idUsuario) {
 		if (!this.idUsuario.equals(idUsuario)) {
-			throw APIException.build(HttpStatus.UNAUTHORIZED, "A credencial não é válida.");
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida");
 		}
-		
+
 	}
 }

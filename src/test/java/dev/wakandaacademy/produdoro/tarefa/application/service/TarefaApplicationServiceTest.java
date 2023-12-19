@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -32,6 +33,7 @@ import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaListResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
@@ -49,6 +51,10 @@ class TarefaApplicationServiceTest {
 
 	@Mock
 	UsuarioRepository usuarioRepository;
+
+	void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
 
 	private UUID idUsuario = DataHelper.createUsuario().getIdUsuario();
 	private String email = DataHelper.createUsuario().getEmail();
@@ -68,10 +74,6 @@ class TarefaApplicationServiceTest {
 	public TarefaRequest getTarefaRequest() {
 		TarefaRequest request = new TarefaRequest("tarefa 1", UUID.randomUUID(), null, null, 0);
 		return request;
-	}
-
-	void setUp() {
-		MockitoAnnotations.openMocks(this);
 	}
 
 	@Test
@@ -109,6 +111,72 @@ class TarefaApplicationServiceTest {
 	}
 
 	@Test
+	void deveIncrementarPomodoroComSucesso() {
+		Usuario usuario = DataHelper.createUsuario();
+		Tarefa tarefa = DataHelper.createTarefa();
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+		tarefaApplicationService.incrementaPomodoroTarefa(usuario.getEmail(), tarefa.getIdTarefa());
+
+		verify(tarefaRepository, times(1)).salva(tarefa);
+		assertEquals(2, tarefa.getContagemPomodoro());
+	}
+
+	@Test
+	void deveRetornarExceptionAoIncrementaPomodoroAUmaTarefaNaoPertencenteAoUsuario() {
+		Tarefa tarefa = DataHelper.createTarefa();
+		Usuario usuarioInvalido = DataHelper.usuarioInvalido();
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuarioInvalido);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService
+				.incrementaPomodoroTarefa(usuarioInvalido.getEmail(), tarefa.getIdTarefa()));
+
+		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
+		assertEquals("Usuário não é dono da Tarefa solicitada!", ex.getMessage());
+	}
+
+	@Test
+	void mudaStatusParaConcluida_PositiveScenario() {
+		// Arrange
+		UUID usuarioId = UUID.fromString("a713162f-20a9-4db9-a85b-90cd51ab18f4");
+		UUID tarefaId = UUID.fromString("06fb5521-9d5a-461a-82fb-e67e3bedc6eb");
+
+		Usuario usuario = DataHelper.createUsuario();
+		Tarefa tarefa = DataHelper.createTarefa();
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+
+		// Act
+		tarefaApplicationService.mudaStatusParaConcluida("email@email.com", tarefaId);
+
+		// Assert
+		assertEquals(StatusTarefa.CONCLUIDA, tarefa.getStatus());
+		verify(tarefaRepository, times(1)).salva(tarefa);
+	}
+
+	@Test
+	void mudaStatusParaConcluida_NegativeScenario_TarefaNaoEncontrada() {
+		// Arrange
+		UUID usuarioId = UUID.fromString("a713162f-20a9-4db9-a85b-90cd51ab18f4");
+		UUID tarefaId = UUID.fromString("06fb5521-9d5a-461a-82fb-e67e3bedc6eb");
+
+		Usuario usuario = DataHelper.createUsuario();
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.empty());
+
+		// Act and Assert
+		assertThrows(APIException.class, () -> {
+			tarefaApplicationService.mudaStatusParaConcluida("email@email.com", tarefaId);
+		});
+
+		// Verify
+		verify(tarefaRepository, never()).salva(any());
+	}
+
 	void testBuscaTodasTarefas_QuandoRepositorioRetornaTarefas() {
 
 		when(tarefaRepository.buscaTodasTarefas(any(UUID.class))).thenReturn(DataHelper.createListTarefa());
@@ -127,6 +195,21 @@ class TarefaApplicationServiceTest {
 				() -> tarefaApplicationService.buscaTodasTarefas(email, UUID.randomUUID()));
 		assertNotNull(ex);
 		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
-		assertEquals("A credencial não é válida.", ex.getMessage());
+		assertEquals("Credencial de autenticação não é válida", ex.getMessage());
+	}
+
+	@Test
+	void deveDeletarTarefa() {
+		// DADO
+		Usuario usuario = DataHelper.createUsuario();
+		Tarefa tarefa = DataHelper.createTarefa();
+
+		// QUANDO
+		when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(tarefa.getIdTarefa())).thenReturn(Optional.of(tarefa));
+		tarefaApplicationService.deletaTarefa(usuario.getEmail(), tarefa.getIdTarefa());
+
+		// ENTÃO
+		verify(tarefaRepository, times(1)).deletaTarefa(tarefa);
 	}
 }

@@ -59,4 +59,12 @@ public class Tarefa {
 	public void altera(EditaTarefaRequest editaTarefaRequest) {
 		this.descricao = editaTarefaRequest.getDescricao();
 	}
+
+	public void incrementaPomodoro() {
+		this.contagemPomodoro++;
+	}
+
+	public void mudaStatusParaConcluida() {
+		this.status = StatusTarefa.CONCLUIDA;
+	}
 }
