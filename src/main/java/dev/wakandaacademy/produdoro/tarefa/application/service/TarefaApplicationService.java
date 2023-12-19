@@ -1,5 +1,6 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.http.HttpStatus;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ch.qos.logback.core.status.Status;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaListResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
@@ -50,5 +52,27 @@ public class TarefaApplicationService implements TarefaService {
 		tarefa.mudaStatusParaConcluida();
 		tarefaRepository.salva(tarefa);
 		log.info("[finaliza] PessoaApplicationService - mudaStatusParaConcluida");
+	}
+
+	public List<TarefaListResponse> buscaTodasTarefas(String usuario, UUID idUsuario) {
+		log.info("[inicia] TarefaApplicationService - buscaTodasTarefas");
+		verificaUsuario(usuario, idUsuario);
+		List<Tarefa> tarefas = tarefaRepository.buscaTodasTarefas(idUsuario);
+		log.info("[finaliza] TarefaApplicationService - buscaTodasTarefas");
+		return TarefaListResponse.converte(tarefas);
+	}
+
+	public void verificaUsuario(String usuario, UUID idUsuario) {
+		Usuario usuarioVerificado = usuarioRepository.buscaUsuarioPorEmail(usuario);
+		usuarioRepository.buscaUsuarioPorId(idUsuario);
+		usuarioVerificado.validaUsuario(idUsuario);
+	}
+
+	@Override
+	public void deletaTarefa(String usuario, UUID idTarefa) {
+		log.info("[inicia] TarefaApplicationService - deletaTarefa");
+		Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
+		tarefaRepository.deletaTarefa(tarefa);
+		log.info("[finaliza] TarefaApplicationService - deletaTarefa");
 	}
 }
