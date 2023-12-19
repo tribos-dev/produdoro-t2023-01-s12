@@ -44,6 +44,16 @@ public class Usuario {
 		this.configuracao = new ConfiguracaoUsuario(configuracaoPadrao);
 	}
 
+	public void validaIdUsuarioPausaLonga(UUID idUsuario) {
+		if (!this.idUsuario.equals(idUsuario)) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "credencial de autenticação não é valida");
+		}
+	}
+
+	public void alterStatusParaPausaLonga() {
+		this.status = StatusUsuario.PAUSA_LONGA;
+	}
+
 	public void mudaStatusParaFoco(UUID idUsuario) {
 		validaUsuario(idUsuario);
 		alteraStatusFoco();
