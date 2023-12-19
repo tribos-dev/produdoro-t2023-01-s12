@@ -17,4 +17,14 @@ public interface UsuarioAPI {
 	@GetMapping(value = "/{idUsuario}")
 	@ResponseStatus(code = HttpStatus.OK)
 	UsuarioCriadoResponse buscaUsuarioPorId(@PathVariable UUID idUsuario);
+
+//PUT
+//PATCH
+
+	@PatchMapping(value = "/{idUsuario}/pausaCurta")
+	@ResponseStatus(code = HttpStatus.NO_CONTENT)
+	void mudaStatusParaPausaCurta(@RequestHeader(name = "Authorization", required = true) String token,
+			@PathVariable UUID idUsuario);
+			
 }
+
