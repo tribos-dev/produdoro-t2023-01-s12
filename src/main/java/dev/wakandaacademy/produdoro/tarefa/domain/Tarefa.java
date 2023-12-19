@@ -56,6 +56,17 @@ public class Tarefa {
 		}
 	}
 
+	public void ativaTarefa() {
+		this.statusAtivacao = StatusAtivacaoTarefa.ATIVA;
+	}
+
+	public void validaUsuario(UUID idUsuario) {
+		if (!idUsuario.equals(this.getIdUsuario())) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
+		}
+
+	}
+
 	public void altera(EditaTarefaRequest editaTarefaRequest) {
 		this.descricao = editaTarefaRequest.getDescricao();
 	}

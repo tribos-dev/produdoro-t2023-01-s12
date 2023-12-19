@@ -33,6 +33,7 @@ import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaListResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.StatusAtivacaoTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.StatusTarefa;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
@@ -211,5 +212,29 @@ class TarefaApplicationServiceTest {
 
 		// ENTÃO
 		verify(tarefaRepository, times(1)).deletaTarefa(tarefa);
+	}
+
+	@Test
+	void ativaTarefaDeveRetornarTarefaAtiva() {
+		UUID idTarefa = DataHelper.createTarefa().getIdTarefa();
+		UUID idUsuario = DataHelper.createUsuario().getIdUsuario();
+		String email = "usuariotest@gmail.com";
+		Tarefa retorno = DataHelper.getTarefaForAtivaTarefa();
+		when(usuarioRepository.buscaUsuarioPorEmail(anyString())).thenReturn(DataHelper.createUsuario());
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(DataHelper.createTarefa()));
+		tarefaApplicationService.ativaTarefa(email, idUsuario, idTarefa);
+		verify(tarefaRepository, times(1)).buscaTarefaPorId(idTarefa);
+		assertEquals(StatusAtivacaoTarefa.ATIVA, retorno.getStatusAtivacao());
+
+	}
+
+	@Test
+	void ativaTarefaDeveRetornarException() {
+		UUID idTarefaInvalido = UUID.fromString("a713162f-20a9-4db9-a85b-90cd51ab18f4");
+		UUID idUsuario = DataHelper.getUsuarioForAtivaTarefa().getIdUsuario();
+		String usuarioEmail = DataHelper.getUsuarioForAtivaTarefa().getEmail();
+		when(tarefaRepository.buscaTarefaPorId(idTarefaInvalido)).thenThrow(APIException.class);
+		assertThrows(APIException.class,
+				() -> tarefaApplicationService.ativaTarefa(usuarioEmail, idUsuario, idTarefaInvalido));
 	}
 }
