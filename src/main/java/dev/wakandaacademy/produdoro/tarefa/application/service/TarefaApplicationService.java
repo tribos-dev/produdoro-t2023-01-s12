@@ -1,8 +1,15 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
+import java.util.List;
+import java.util.UUID;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaListResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
@@ -10,10 +17,6 @@ import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioReposi
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import org.springframework.http.HttpStatus;
-import org.springframework.stereotype.Service;
-
-import java.util.UUID;
 
 @Service
 @Log4j2
@@ -50,4 +53,20 @@ public class TarefaApplicationService implements TarefaService {
 		tarefaRepository.salva(tarefa);
 		log.info("[finaliza] TarefaApplicationService - editaTarefa");
 	}
+
+	@Override
+	public List<TarefaListResponse> buscaTodasTarefas(String usuario, UUID idUsuario) {
+		log.info("[inicia] TarefaApplicationService - buscaTodasTarefas");
+		verificaUsuario(usuario, idUsuario);
+		List<Tarefa> tarefas = tarefaRepository.buscaTodasTarefas(idUsuario);
+		log.info("[finaliza] TarefaApplicationService - buscaTodasTarefas");
+		return TarefaListResponse.converte(tarefas);
+	}
+
+	public void verificaUsuario(String usuario, UUID idUsuario) {
+		Usuario usuarioVerificado = usuarioRepository.buscaUsuarioPorEmail(usuario);
+		usuarioRepository.buscaUsuarioPorId(idUsuario);
+		usuarioVerificado.validaUsuario(idUsuario);
+	}
+
 }
