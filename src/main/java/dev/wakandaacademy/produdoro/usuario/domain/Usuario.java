@@ -18,7 +18,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import lombok.extern.java.Log;
 import lombok.extern.log4j.Log4j2;
 
 @Builder
@@ -39,7 +38,7 @@ public class Usuario {
 	private StatusUsuario status = StatusUsuario.FOCO;
 	@Builder.Default
 	private Integer quantidadePomodorosPausaCurta = 0;
-	
+
 	public Usuario(UsuarioNovoRequest usuarioNovo, ConfiguracaoPadrao configuracaoPadrao) {
 		this.idUsuario = UUID.randomUUID();
 		this.email = usuarioNovo.getEmail();
@@ -48,17 +47,40 @@ public class Usuario {
 	}
 
 	public void mudaStatusPausaCurta() {
-		//validaUsuario(idUsuario);
+		// validaUsuario(idUsuario);
 		this.status = StatusUsuario.PAUSA_CURTA;
 
 	}
 
-    public void validaUsuario(UUID idUsuario) {
+	public void validaUsuario(UUID idUsuario) {
 		log.info("[inicia] Usuario - validaUsuario");
 		if (!this.idUsuario.equals(idUsuario)) {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Credencial de autenticação não é válida");
 
 		}
 		log.info("[finaliza] Usuario - validaUsuario");
-    }
+	}
+
+	public void validaIdUsuarioPausaLonga(UUID idUsuario) {
+		if (!this.idUsuario.equals(idUsuario)) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "credencial de autenticação não é valida");
+		}
+	}
+
+	public void alterStatusParaPausaLonga() {
+		this.status = StatusUsuario.PAUSA_LONGA;
+	}
+
+	public void mudaStatusParaFoco(UUID idUsuario) {
+		validaUsuario(idUsuario);
+		alteraStatusFoco();
+	}
+
+	private StatusUsuario alteraStatusFoco() {
+		if (this.status.equals(StatusUsuario.FOCO)) {
+			throw APIException.build(HttpStatus.CONFLICT, "Usuário já está em FOCO");
+		}
+		return this.status = StatusUsuario.FOCO;
+	}
+
 }
