@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import ch.qos.logback.core.status.Status;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaListResponse;
@@ -43,6 +42,15 @@ public class TarefaApplicationService implements TarefaService {
 		tarefa.pertenceAoUsuario(usuarioPorEmail);
 		log.info("[finaliza] TarefaApplicationService - detalhaTarefa");
 		return tarefa;
+	}
+
+	@Override
+	public void incrementaPomodoroTarefa(String email, UUID idTarefa) {
+		log.info("[inicia] TarefaApplicationService - incrementaPomodoroTarefa");
+		Tarefa tarefa = detalhaTarefa(email, idTarefa);
+		tarefa.incrementaPomodoro();
+		tarefaRepository.salva(tarefa);
+		log.info("[finaliza] TarefaApplicationService - incrementaPomodoroTarefa");
 	}
 
 	@Override

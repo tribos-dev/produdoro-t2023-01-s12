@@ -46,7 +46,7 @@ class TarefaApplicationServiceTest {
 
 	@Mock
 	UsuarioRepository usuarioRepository;
-
+	
 	private UUID idUsuario = DataHelper.createUsuario().getIdUsuario();
 	private String email = DataHelper.createUsuario().getEmail();
 
@@ -65,6 +65,33 @@ class TarefaApplicationServiceTest {
 	public TarefaRequest getTarefaRequest() {
 		TarefaRequest request = new TarefaRequest("tarefa 1", UUID.randomUUID(), null, null, 0);
 		return request;
+	}
+
+	@Test
+	void deveIncrementarPomodoroComSucesso() {
+		Usuario usuario = DataHelper.createUsuario();
+		Tarefa tarefa = DataHelper.createTarefa();
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+		tarefaApplicationService.incrementaPomodoroTarefa(usuario.getEmail(), tarefa.getIdTarefa());
+
+		verify(tarefaRepository, times(1)).salva(tarefa);
+		assertEquals(2, tarefa.getContagemPomodoro());
+	}
+
+	@Test
+	void deveRetornarExceptionAoIncrementaPomodoroAUmaTarefaNaoPertencenteAoUsuario() {
+		Tarefa tarefa = DataHelper.createTarefa();
+		Usuario usuarioInvalido = DataHelper.usuarioInvalido();
+
+		when(usuarioRepository.buscaUsuarioPorEmail(any())).thenReturn(usuarioInvalido);
+		when(tarefaRepository.buscaTarefaPorId(any())).thenReturn(Optional.of(tarefa));
+		APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService
+				.incrementaPomodoroTarefa(usuarioInvalido.getEmail(), tarefa.getIdTarefa()));
+
+		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
+		assertEquals("Usuário não é dono da Tarefa solicitada!", ex.getMessage());
 	}
 
 	@Test

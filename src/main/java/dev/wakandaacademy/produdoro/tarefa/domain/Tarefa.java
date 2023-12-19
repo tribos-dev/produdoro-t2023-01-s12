@@ -55,8 +55,11 @@ public class Tarefa {
 		}
 	}
 
+	public void incrementaPomodoro() {
+		this.contagemPomodoro++;
+	}
+
 	public void mudaStatusParaConcluida() {
 		this.status = StatusTarefa.CONCLUIDA;
 	}
-
 }
