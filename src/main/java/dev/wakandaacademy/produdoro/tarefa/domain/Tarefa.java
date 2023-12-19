@@ -52,15 +52,12 @@ public class Tarefa {
 	}
 
 	public void pertenceAoUsuario(Usuario usuarioPorEmail) {
-		if(!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
+		if (!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
 		}
 	}
+
 	public void altera(EditaTarefaRequest editaTarefaRequest) {
-		if (editaTarefaRequest.getDescricao().isBlank()) {
-			throw APIException.build(HttpStatus.BAD_REQUEST, "O campo não pode estar vazio!");
-		} else {
-			this.descricao = editaTarefaRequest.getDescricao();
-		}
+		this.descricao = editaTarefaRequest.getDescricao();
 	}
 }
