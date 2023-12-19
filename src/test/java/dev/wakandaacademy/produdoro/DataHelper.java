@@ -27,7 +27,7 @@ public class DataHelper {
         return Tarefa.builder().contagemPomodoro(1).idTarefa(UUID.fromString("06fb5521-9d5a-461a-82fb-e67e3bedc6eb"))
                 .idUsuario(usuario1).descricao("descricao tarefa").statusAtivacao(StatusAtivacaoTarefa.INATIVA).build();
     }
-
+    
     public static UsuarioNovoRequest getUsuarioRequest() {
         UsuarioNovoRequest userReq = new UsuarioNovoRequest("email@email.com", "12345");
         return userReq;
