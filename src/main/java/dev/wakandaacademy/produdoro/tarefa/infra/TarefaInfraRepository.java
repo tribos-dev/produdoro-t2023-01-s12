@@ -1,5 +1,6 @@
 package dev.wakandaacademy.produdoro.tarefa.infra;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -23,36 +24,53 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class TarefaInfraRepository implements TarefaRepository {
 
-    private final TarefaSpringMongoDBRepository tarefaSpringMongoDBRepository;
+	private final TarefaSpringMongoDBRepository tarefaSpringMongoDBRepository;
 	private final MongoTemplate mongoTemplate;
 
-    @Override
-    public Tarefa salva(Tarefa tarefa) {
-        log.info("[inicia] TarefaInfraRepository - salva");
-        try {
-            tarefaSpringMongoDBRepository.save(tarefa);
-        } catch (DataIntegrityViolationException e) {
-            throw APIException.build(HttpStatus.BAD_REQUEST, "Tarefa já cadastrada", e);
-        }
-        log.info("[finaliza] TarefaInfraRepository - salva");
-        return tarefa;
-    }
-    @Override
-    public Optional<Tarefa> buscaTarefaPorId(UUID idTarefa) {
-        log.info("[inicia] TarefaInfraRepository - buscaTarefaPorId");
-        Optional<Tarefa> tarefaPorId = tarefaSpringMongoDBRepository.findByIdTarefa(idTarefa);
-        log.info("[finaliza] TarefaInfraRepository - buscaTarefaPorId");
-        return tarefaPorId;
-    }
+	@Override
+	public Tarefa salva(Tarefa tarefa) {
+		log.info("[inicia] TarefaInfraRepository - salva");
+		try {
+			tarefaSpringMongoDBRepository.save(tarefa);
+		} catch (DataIntegrityViolationException e) {
+			throw APIException.build(HttpStatus.BAD_REQUEST, "Tarefa já cadastrada", e);
+		}
+		log.info("[finaliza] TarefaInfraRepository - salva");
+		return tarefa;
+	}
+
+	@Override
+	public Optional<Tarefa> buscaTarefaPorId(UUID idTarefa) {
+		log.info("[inicia] TarefaInfraRepository - buscaTarefaPorId");
+		Optional<Tarefa> tarefaPorId = tarefaSpringMongoDBRepository.findByIdTarefa(idTarefa);
+		log.info("[finaliza] TarefaInfraRepository - buscaTarefaPorId");
+		return tarefaPorId;
+	}
+
 	@Override
 	public void desativaTarefa(UUID idUsuario) {
-        log.info("[inicia] TarefaInfraRepository - desativaTarefa");
-        Query query = new Query();
-        query.addCriteria(Criteria.where("idUsuario").is(idUsuario));
-        Update update = new Update();
-        update.set("statusAtivacao", StatusAtivacaoTarefa.INATIVA);
-        mongoTemplate.updateMulti(query, update, Tarefa.class);
-        log.info("[finaliza] TarefaInfraRepository - desativaTarefa");
-		
+		log.info("[inicia] TarefaInfraRepository - desativaTarefa");
+		Query query = new Query();
+		query.addCriteria(Criteria.where("idUsuario").is(idUsuario));
+		Update update = new Update();
+		update.set("statusAtivacao", StatusAtivacaoTarefa.INATIVA);
+		mongoTemplate.updateMulti(query, update, Tarefa.class);
+		log.info("[finaliza] TarefaInfraRepository - desativaTarefa");
+
+	}
+
+	@Override
+	public void deletaTarefa(Tarefa tarefa) {
+		log.info("[inicia] TarefaInfraRepository - deletaTarefa");
+		tarefaSpringMongoDBRepository.delete(tarefa);
+		log.info("[finaliza] TarefaInfraRepository - deletaTarefa");
+	}
+
+	@Override
+	public List<Tarefa> buscaTodasTarefas(UUID idUsuario) {
+		log.info("[inicia] TarefaInfraRepository - buscaTodasTarefas");
+		List<Tarefa> tarefaPorId = tarefaSpringMongoDBRepository.findAllByIdUsuario(idUsuario);
+		log.info("[finaliza] TarefaInfraRepository - buscaTodasTarefas");
+		return tarefaPorId;
 	}
 }

@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.http.HttpStatus;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import lombok.AccessLevel;
@@ -50,9 +51,8 @@ public class Tarefa {
 	}
 
 	public void pertenceAoUsuario(Usuario usuarioPorEmail) {
-		if(!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
-			throw APIException
-			.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
+		if (!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
 		}
 	}
 
@@ -61,9 +61,21 @@ public class Tarefa {
 	}
 
 	public void validaUsuario(UUID idUsuario) {
-		if(!idUsuario.equals(this.getIdUsuario())) {
-			  throw APIException
-			   .build(HttpStatus.UNAUTHORIZED, "Usuário não validado!");
-			}
+		if (!idUsuario.equals(this.getIdUsuario())) {
+			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
+		}
+
+	}
+
+	public void altera(EditaTarefaRequest editaTarefaRequest) {
+		this.descricao = editaTarefaRequest.getDescricao();
+	}
+
+	public void incrementaPomodoro() {
+		this.contagemPomodoro++;
+	}
+
+	public void mudaStatusParaConcluida() {
+		this.status = StatusTarefa.CONCLUIDA;
 	}
 }
