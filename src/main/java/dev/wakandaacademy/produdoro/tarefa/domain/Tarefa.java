@@ -3,6 +3,7 @@ package dev.wakandaacademy.produdoro.tarefa.domain;
 import java.util.UUID;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 
@@ -53,6 +54,13 @@ public class Tarefa {
 	public void pertenceAoUsuario(Usuario usuarioPorEmail) {
 		if(!this.idUsuario.equals(usuarioPorEmail.getIdUsuario())) {
 			throw APIException.build(HttpStatus.UNAUTHORIZED, "Usuário não é dono da Tarefa solicitada!");
+		}
+	}
+	public void altera(EditaTarefaRequest editaTarefaRequest) {
+		if (editaTarefaRequest.getDescricao() != null && editaTarefaRequest.getDescricao().isBlank()) {
+			throw APIException.build(HttpStatus.BAD_REQUEST, "O campo não pode estar vazio!");
+		} else {
+			this.descricao = editaTarefaRequest.getDescricao();
 		}
 	}
 }

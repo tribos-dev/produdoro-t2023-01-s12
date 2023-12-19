@@ -1,25 +1,26 @@
 package dev.wakandaacademy.produdoro.tarefa.application.service;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-
+import dev.wakandaacademy.produdoro.DataHelper;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
+import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
+import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
+import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
+import dev.wakandaacademy.produdoro.usuario.application.api.UsuarioNovoRequest;
+import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
+import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
-import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
-import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
-import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
+import java.util.UUID;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class TarefaApplicationServiceTest {
@@ -31,6 +32,9 @@ class TarefaApplicationServiceTest {
     //	@MockBean
     @Mock
     TarefaRepository tarefaRepository;
+    @Mock
+    UsuarioRepository usuarioRepository;
+    private UsuarioNovoRequest ConfiguracaoPadrao;
 
     @Test
     void deveRetornarIdTarefaNovaCriada() {
@@ -44,10 +48,23 @@ class TarefaApplicationServiceTest {
         assertEquals(UUID.class, response.getIdTarefa().getClass());
     }
 
-
-
     public TarefaRequest getTarefaRequest() {
         TarefaRequest request = new TarefaRequest("tarefa 1", UUID.randomUUID(), null, null, 0);
         return request;
+    }
+
+    public static EditaTarefaRequest editaTarefaRequest() {
+        EditaTarefaRequest editaTarefaRequest = new EditaTarefaRequest();
+        return editaTarefaRequest;
+    }
+    @Test
+    void deveEditarTarefa() {
+        Usuario usuario = DataHelper.createUsuario();
+        Tarefa tarefa = DataHelper.createTarefa();
+
+        EditaTarefaRequest editaTarefaRequest = new EditaTarefaRequest();
+        tarefaApplicationService.editaTarefa(usuario.getEmail(), tarefa, editaTarefaRequest());
+
+        verify(tarefaRepository, times(1)).salva(tarefa);
     }
 }
