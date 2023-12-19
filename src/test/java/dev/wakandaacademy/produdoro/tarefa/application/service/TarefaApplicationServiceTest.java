@@ -7,9 +7,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -27,17 +30,20 @@ import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.repository.TarefaRepository;
 import dev.wakandaacademy.produdoro.tarefa.domain.Tarefa;
 import dev.wakandaacademy.produdoro.usuario.application.repository.UsuarioRepository;
+import dev.wakandaacademy.produdoro.usuario.domain.Usuario;
 
 @ExtendWith(MockitoExtension.class)
 class TarefaApplicationServiceTest {
 
 	@Mock
-    private TarefaRepository tarefaRepository;
-    @Mock
-    private UsuarioRepository usuarioRepository;
-    private UUID idUsuario = DataHelper.createUsuario().getIdUsuario();
-    private String email = DataHelper.createUsuario().getEmail();
-    
+	TarefaRepository tarefaRepository;
+
+	@Mock
+	UsuarioRepository usuarioRepository;
+	
+	private UUID idUsuario = DataHelper.createUsuario().getIdUsuario();
+	private String email = DataHelper.createUsuario().getEmail();
+
 	@InjectMocks
 	private TarefaApplicationService tarefaApplicationService;
 
@@ -57,26 +63,41 @@ class TarefaApplicationServiceTest {
 		TarefaRequest request = new TarefaRequest("tarefa 1", UUID.randomUUID(), null, null, 0);
 		return request;
 	}
-	
-	
+
 	@Test
 	void testBuscaTodasTarefas_QuandoRepositorioRetornaTarefas() {
-	   
+
 		when(tarefaRepository.buscaTodasTarefas(any(UUID.class))).thenReturn(DataHelper.createListTarefa());
-        when(usuarioRepository.buscaUsuarioPorEmail(anyString())).thenReturn(DataHelper.createUsuario());
-        List<TarefaListResponse> response = tarefaApplicationService.buscaTodasTarefas(email, idUsuario);
-        assertNotNull(response);
-        assertTrue(response.size()>0);
-        assertFalse(response.isEmpty());
-   	}
+		when(usuarioRepository.buscaUsuarioPorEmail(anyString())).thenReturn(DataHelper.createUsuario());
+		List<TarefaListResponse> response = tarefaApplicationService.buscaTodasTarefas(email, idUsuario);
+		assertNotNull(response);
+		assertTrue(response.size() > 0);
+		assertFalse(response.isEmpty());
+	}
 
 	@Test
-    void visualizaTodasTarefasFalha(){
+	void visualizaTodasTarefasFalha() {
 
-        when(usuarioRepository.buscaUsuarioPorEmail(anyString())).thenReturn(DataHelper.createUsuario());
-        APIException ex = assertThrows(APIException.class, () -> tarefaApplicationService.buscaTodasTarefas(email, UUID.randomUUID()));
-        assertNotNull(ex);
-        assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
-        assertEquals("A credencial não é válida.", ex.getMessage());
-    }
+		when(usuarioRepository.buscaUsuarioPorEmail(anyString())).thenReturn(DataHelper.createUsuario());
+		APIException ex = assertThrows(APIException.class,
+				() -> tarefaApplicationService.buscaTodasTarefas(email, UUID.randomUUID()));
+		assertNotNull(ex);
+		assertEquals(HttpStatus.UNAUTHORIZED, ex.getStatusException());
+		assertEquals("A credencial não é válida.", ex.getMessage());
+	}
+
+	@Test
+	void deveDeletarTarefa() {
+		// DADO
+		Usuario usuario = DataHelper.createUsuario();
+		Tarefa tarefa = DataHelper.createTarefa();
+
+		// QUANDO
+		when(usuarioRepository.buscaUsuarioPorEmail(usuario.getEmail())).thenReturn(usuario);
+		when(tarefaRepository.buscaTarefaPorId(tarefa.getIdTarefa())).thenReturn(Optional.of(tarefa));
+		tarefaApplicationService.deletaTarefa(usuario.getEmail(), tarefa.getIdTarefa());
+
+		// ENTÃO
+		verify(tarefaRepository, times(1)).deletaTarefa(tarefa);
+	}
 }
