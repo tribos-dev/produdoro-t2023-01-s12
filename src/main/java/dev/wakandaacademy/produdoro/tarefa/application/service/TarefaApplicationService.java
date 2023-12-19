@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import dev.wakandaacademy.produdoro.handler.APIException;
+import dev.wakandaacademy.produdoro.tarefa.application.api.EditaTarefaRequest;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaListResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaRequest;
@@ -42,6 +43,15 @@ public class TarefaApplicationService implements TarefaService {
 		tarefa.pertenceAoUsuario(usuarioPorEmail);
 		log.info("[finaliza] TarefaApplicationService - detalhaTarefa");
 		return tarefa;
+	}
+
+	@Override
+	public void editaTarefa(String usuario, UUID idTarefa, EditaTarefaRequest editaTarefaRequest) {
+		log.info("[inicia] TarefaApplicationService - editaTarefa");
+		Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
+		tarefa.altera(editaTarefaRequest);
+		tarefaRepository.salva(tarefa);
+		log.info("[finaliza] TarefaApplicationService - editaTarefa");
 	}
 
 	@Override

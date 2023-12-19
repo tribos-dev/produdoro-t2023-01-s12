@@ -53,6 +53,14 @@ public class TarefaRestController implements TarefaAPI {
 	}
 
 	@Override
+	public void editaTarefa(String token, UUID idTarefa, EditaTarefaRequest editaTarefaRequest) {
+		log.info("[inicia] TarefaRestController - editaTarefa");
+		String usuario = getUsuarioByToken(token);
+		tarefaService.editaTarefa(usuario, idTarefa, editaTarefaRequest);
+		log.info("[finaliza] TarefaRestController - editaTarefa");
+	}
+
+	@Override
 	public void mudaStatusParaConcluida(String token, UUID idTarefa) {
 		log.info("[inicia] TarefaRestController - mudaStatusParaConcluida");
 		log.info("[idTarefa {}", idTarefa);
@@ -60,7 +68,6 @@ public class TarefaRestController implements TarefaAPI {
 		tarefaService.mudaStatusParaConcluida(usuario, idTarefa);
 		log.info("[finaliza] TarefaRestController - mudaStatusParaConcluida");
 	}
-
 
 	public void deletaTarefa(String token, UUID idTarefa) {
 		log.info("[inicia] TarefaRestController - deletaTarefa");
