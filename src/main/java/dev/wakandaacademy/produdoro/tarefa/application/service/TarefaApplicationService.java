@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import ch.qos.logback.core.status.Status;
 import dev.wakandaacademy.produdoro.handler.APIException;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaIdResponse;
 import dev.wakandaacademy.produdoro.tarefa.application.api.TarefaListResponse;
@@ -45,6 +46,14 @@ public class TarefaApplicationService implements TarefaService {
 	}
 
 	@Override
+	public void mudaStatusParaConcluida(String usuario, UUID idTarefa) {
+		log.info("[inicia] PessoaApplicationService - mudaStatusParaConcluida");
+		Tarefa tarefa = detalhaTarefa(usuario, idTarefa);
+		tarefa.mudaStatusParaConcluida();
+		tarefaRepository.salva(tarefa);
+		log.info("[finaliza] PessoaApplicationService - mudaStatusParaConcluida");
+	}
+
 	public List<TarefaListResponse> buscaTodasTarefas(String usuario, UUID idUsuario) {
 		log.info("[inicia] TarefaApplicationService - buscaTodasTarefas");
 		verificaUsuario(usuario, idUsuario);

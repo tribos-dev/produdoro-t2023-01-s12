@@ -13,6 +13,8 @@ public interface TarefaService {
 
 	Tarefa detalhaTarefa(String usuario, UUID idTarefa);
 
+	void mudaStatusParaConcluida(String usuario, UUID idTarefa);
+
 	void deletaTarefa(String usuario, UUID idTarefa);
 
 	List<TarefaListResponse> buscaTodasTarefas(String usuario, UUID idUsuario);
